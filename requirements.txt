@@ -1,0 +1,41 @@
+# ===== Real-Time Social Sentiment Market Pulse - dependencies =====
+
+# Core data
+pandas>=2.1
+numpy>=1.26
+pyyaml>=6.0
+python-dotenv>=1.0
+
+# Database (SQLite built-in; SQLAlchemy gives Postgres-ready abstraction)
+SQLAlchemy>=2.0
+psycopg2-binary>=2.9          # only needed if you switch to PostgreSQL
+
+# NLP / Deep learning (DistilBERT fine-tuning)
+# NOTE: for GPU training install the CUDA torch build instead of the default CPU wheel:
+#   pip install torch --index-url https://download.pytorch.org/whl/cu124
+torch>=2.2
+# transformers/datasets are PINNED: newer combos (transformers 5.x + datasets 4.x) hit a
+# Windows pyarrow/torch load-order crash + Trainer API changes. These versions are tested.
+transformers==4.46.3
+datasets==3.2.0
+scikit-learn>=1.4
+accelerate>=0.30             # speeds up HuggingFace Trainer on GPU
+
+# Secondary ML model
+xgboost>=2.0
+
+# Market data
+yfinance>=0.2.40
+
+# Data collection (live mode)
+praw>=7.7                    # Reddit API
+feedparser>=6.0             # RSS feeds
+
+# Dashboard
+streamlit>=1.35
+plotly>=5.20
+statsmodels>=0.14          # OLS trendline on the deep-dive scatter plot
+matplotlib>=3.8            # required by pandas Styler.background_gradient (Model page)
+
+# Utilities
+tqdm>=4.66

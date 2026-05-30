@@ -1,0 +1,66 @@
+# ============================================================
+#  Real-Time Social Sentiment Market Pulse - central config
+#  Everything tunable lives here. Edit and re-run; no code changes needed.
+# ============================================================
+
+# --- Run mode -------------------------------------------------
+# "demo" -> uses the synthetic data generator (no API keys, always works)
+# "live" -> uses real Reddit (PRAW) + RSS feeds (requires .env keys)
+mode: demo
+
+# --- Paths (relative to project root) -------------------------
+paths:
+  data_dir: data
+  raw_dir: data/raw
+  processed_dir: data/processed
+  models_dir: data/models
+  db_file: data/market_pulse.db          # SQLite file (ignored if using Postgres)
+
+# --- Database -------------------------------------------------
+# To switch to PostgreSQL, set use_postgres: true and fill the url.
+database:
+  use_postgres: false
+  postgres_url: "postgresql+psycopg2://user:password@localhost:5432/market_pulse"
+
+# --- Synthetic data generator (demo mode) ---------------------
+synthetic:
+  days: 120                  # how many days of history to generate
+  posts_per_day: 5000        # ~5K daily posts (matches resume claim)
+  seed: 42                   # reproducible output
+
+# --- Reddit (live mode) ---------------------------------------
+reddit:
+  subreddits: [wallstreetbets, stocks, investing]
+  posts_per_subreddit: 200   # per refresh
+  time_filter: day           # hot/day window
+
+# --- RSS feeds (live mode) ------------------------------------
+rss_feeds:
+  - https://feeds.finance.yahoo.com/rss/2.0/headline
+  - https://feeds.content.dowjones.io/public/rss/mw_topstories   # MarketWatch top stories
+  - https://seekingalpha.com/market_currents.xml
+
+# --- Sentiment model ------------------------------------------
+model:
+  base_model: distilbert-base-uncased
+  finetuned_dir: data/models/distilbert_finetuned
+  max_length: 128
+  batch_size_train: 16
+  batch_size_infer: 64
+  epochs: 3
+  learning_rate: 0.00002
+  target_f1: 0.87
+  labels: [negative, neutral, positive]   # index 0,1,2
+
+# --- Analysis parameters --------------------------------------
+analysis:
+  anomaly_zscore_threshold: 2.5
+  anomaly_rolling_window: 24       # periods for rolling baseline
+  correlation_max_lag: 3           # test lags -3..+3 days
+  signal_bullish_threshold: 0.15   # daily sentiment above => bullish
+  signal_bearish_threshold: -0.15  # below => bearish
+
+# --- Backtest -------------------------------------------------
+backtest:
+  horizon_days: 1                  # predict next-day direction
+  starting_capital: 1.0            # for the equity curve ($1)
