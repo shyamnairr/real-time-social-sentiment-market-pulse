@@ -193,9 +193,11 @@ AppTest (headless) — zero exceptions — and the live server boots (health 200
 ### Phase checklist — ALL COMPLETE ✅
 - [x] Phase 1–7 done. Project is fully runnable in demo mode with one command.
 
-### Key numbers (current demo build)
-- ~696K posts | 55 tickers | 114 days | backtest ~75% | pearson 0.55 | F1 (precomputed) 0.882
-- XGBoost: acc ~0.68, AUC ~0.77 vs DistilBERT-signal ~0.75
+### Key numbers (CURRENT — after real-model re-score)
+- ~696,751 posts | 55 tickers | 114 days
+- **Model weighted F1 = 0.867 (REAL, trained)** | accuracy 86.7%
+- **Backtest directional accuracy = 78.0%** (3,889 signals) | pearson 0.543
+- XGBoost: acc 0.694, AUC 0.769 vs DistilBERT-signal 0.767 | anomalies 259
 
 ### MODEL TRAINED ✅ (2026-05-30, on user's RTX 3060)
 - Real fine-tuned DistilBERT saved to data/models/distilbert_finetuned/ with metrics.json
@@ -230,6 +232,40 @@ AppTest (headless) — zero exceptions — and the live server boots (health 200
   are NOT installed here but are in requirements.txt.
 - Lexicon backend is the demo default; it auto-upgrades to the fine-tuned model once
   data/models/distilbert_finetuned/ exists.
+
+---
+
+## 5b. SESSION 2 (2026-05-30) — post-training polish + GitHub deploy
+
+**UI polish (vivid theme) — COMPLETE.** dashboard/theme.py heavily upgraded:
+- Inter font, layered radial-glow background (blue/purple/green), colored+glowing KPI
+  cards (tinted by accent color via new `rgba()` helper in theme.py), styled native
+  st.metric tiles, gradient h1, accent-bar h4, styled sidebar/buttons/badges, framed
+  plotly charts. components.kpi_card now injects per-card tinted style + glow accent.
+- app.py KPI colors varied (ACCENT2 for posts, GOLD for assets). Palette brightened
+  (BULL #1ed79b, BEAR #ff4d5e, added GOLD #f5b94a, ACCENT2 #a06bf5).
+- LESSON: editing imported modules (theme.py) requires a FULL Streamlit restart
+  (Ctrl+C + relaunch) + browser hard-refresh; "Rerun" reuses cached modules.
+
+**Bug fixes — COMPLETE.**
+- Heatmap x-axis showed 2004/2005 (Plotly misparsed "MM-DD" strings). FIX: pass real
+  datetimes + `xaxis=dict(type="date", tickformat="%b %d")` in 1_Sentiment_Heatmap.py.
+- matplotlib IS required (pandas Styler.background_gradient on Model page). It was wrongly
+  removed earlier; **re-added to requirements.txt** and installed. (Supersedes the Phase-7
+  note that said matplotlib was removed.)
+
+**GitHub — DEPLOYED (public).**
+- Repo: **https://github.com/shyamnairr/real-time-social-sentiment-market-pulse** (public, MIT).
+- `git init` (branch main); `git config user.email shemneyr99@gmail.com`, `user.name shyamnairr`.
+- .gitignore extended to exclude `.claude/`, `train_log.txt`, `rescore_log.txt`.
+  Added `LICENSE` (MIT, "Shyam Nair", 2026). 43 files tracked (NO data/, NO .venv, NO .env,
+  NO trained model — all gitignored; models/precomputed_metrics.json IS tracked as fallback).
+- Committed, pushed, then amended to REMOVE the Co-Authored-By trailer (user wanted sole
+  authorship) and force-pushed. Current sole author: shyamnairr <shemneyr99@gmail.com>.
+- Remote `origin` already configured. Future updates: `git add -A; git commit -m "..."; git push`.
+
+**Status: PROJECT COMPLETE & SHIPPED.** Optional remaining (user choice): repo
+description+topics on GitHub, pin to profile, README screenshots, 60-sec video script.
 
 ---
 
